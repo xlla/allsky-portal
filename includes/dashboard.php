@@ -9,38 +9,39 @@ function DisplayDashboard(){
   $status = new StatusMessages();
 
   exec( 'ifconfig wlan0', $return );
-  exec( 'iwconfig wlan0', $return );
-
+  exec( 'iw dev wlan0 info', $return );
+  exec( 'iw dev wlan0 link', $return );
+  exec( 'cat /proc/net/wireless', $return );
   $strWlan0 = implode( " ", $return );
   $strWlan0 = preg_replace( '/\s\s+/', ' ', $strWlan0 );
 
 // Parse results from ifconfig/iwconfig
-  preg_match( '/ether ([0-9a-f:]+)/i',$strWlan0,$result );
+  preg_match( '/hwaddr ([0-9A-Fa-f:]+)/i',$strWlan0,$result );
   $strHWAddress = $result[1];
-  preg_match( '/inet ([0-9.]+)/i',$strWlan0,$result );
+  preg_match( '/inet addr:([0-9.]+)/i',$strWlan0,$result );
   $strIPAddress = $result[1];
-  preg_match( '/netmask ([0-9.]+)/i',$strWlan0,$result );
+  preg_match( '/mask:([0-9.]+)/i',$strWlan0,$result );
   $strNetMask = $result[1];
-  preg_match( '/RX packets (\d+)/',$strWlan0,$result );
+  preg_match( '/RX packets:(\d+)/',$strWlan0,$result );
   $strRxPackets = $result[1];
-  preg_match( '/TX packets (\d+)/',$strWlan0,$result );
+  preg_match( '/TX packets:(\d+)/',$strWlan0,$result );
   $strTxPackets = $result[1];
-  preg_match_all( '/bytes (\d+ \(\d+.\d+ [K|M|G]iB\))/i',$strWlan0,$result );
+  preg_match_all( '/bytes:(\d+ \(\d+.\d+ [K|M|G]iB\))/i',$strWlan0,$result );
   $strRxBytes = $result[1][0];
   $strTxBytes = $result[1][1];
-  preg_match( '/ESSID:\"([a-zA-Z0-9\s]+)\"/i',$strWlan0,$result );
+  preg_match( '/ssid: ([a-zA-Z0-9]+)/i',$strWlan0,$result );
   $strSSID = str_replace( '"','',$result[1] );
-  preg_match( '/Access Point: ([0-9a-f:]+)/i',$strWlan0,$result );
+  preg_match( '/Connected to ([0-9a-f:]+)/i',$strWlan0,$result );
   $strBSSID = $result[1];
-  preg_match( '/Bit Rate=([0-9\.]+ Mb\/s)/i',$strWlan0,$result );
+  preg_match( '/tx bitrate:\s+([0-9\.]+ Mbit\/s)/i',$strWlan0,$result );
   $strBitrate = $result[1];
-  preg_match( '/Tx-Power=([0-9]+ dBm)/i',$strWlan0,$result );
+  preg_match( '/txpower ([0-9\.]+ dBm)/i',$strWlan0,$result );
   $strTxPower = $result[1];
-  preg_match( '/Link Quality=([0-9]+)/i',$strWlan0,$result );
+  preg_match( '/wlan0: [0-9]+\s+([0-9]+)\. +/i',$strWlan0,$result );
   $strLinkQuality = $result[1];
-  preg_match( '/Signal level=(-?[0-9]+ dBm)/i',$strWlan0,$result );
+  preg_match( '/signal:\s+(-?[0-9]+ dBm)/i',$strWlan0,$result );
   $strSignalLevel = $result[1];
-  preg_match('/Frequency:(\d+.\d+ GHz)/i',$strWlan0,$result);
+  preg_match('/channel \d+ \((\d+.\d+ MHz)\)/i',$strWlan0,$result);
   $strFrequency = $result[1];
 
   if(strpos( $strWlan0, "UP" ) !== false && strpos( $strWlan0, "RUNNING" ) !== false ) {
@@ -129,7 +130,7 @@ function DisplayDashboard(){
               </div>
 
                 </div><!-- /.panel-body -->
-                <div class="panel-footer">Information provided by ifconfig and iwconfig</div>
+                <div class="panel-footer">Information provided by ifconfig and iw and /proc/net/wireless</div>
             </div><!-- /.panel-default -->
         </div><!-- /.col-lg-12 -->
     </div><!-- /.row -->
