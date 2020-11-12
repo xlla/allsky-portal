@@ -54,7 +54,7 @@ define('RASPI_TORPROXY_CONFIG', '/etc/tor/torrc');
 // Optional services, set to true to enable.
 define('RASPI_OPENVPN_ENABLED', false);
 define('RASPI_TORPROXY_ENABLED', false);
-
+session_start();
 include_once(RASPI_CONFIG . '/raspap.php');
 include_once('includes/functions.php');
 include_once('includes/dashboard.php');
@@ -79,7 +79,6 @@ $page = $_GET['page'];
 $camera_settings_str = file_get_contents(RASPI_CAMERA_SETTINGS, true);
 $camera_settings_array = json_decode($camera_settings_str, true);
 
-session_start();
 if (empty($_SESSION['csrf_token'])) {
     if (function_exists('mcrypt_create_iv')) {
         $_SESSION['csrf_token'] = bin2hex(mcrypt_create_iv(32, MCRYPT_DEV_URANDOM));
